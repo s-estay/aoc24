@@ -105,7 +105,7 @@ fn main() {
   process_part1(file);
 }
 ```
-- Before we continue we need to take care of the result of type `Option<T>` that `next()` is returning
+- Before we continue we need to take care of the result of type `Option<T>` that `next` is returning
 - The `Option<T>` type could be something (valid value) or could be nothing (more or less like returning `null`)
 - In the case of `next`, it will be something until the iteration is finished (`None`)
 - We will use `match` to manage the variants that `Option` might return: `Some` and `None`
@@ -319,9 +319,9 @@ for i in left.iter() {
 - Now we create a new vector to store the result
 - Every value stored in the new vector is then multiplied by index `i` of the left vector
 - Since `i` is of type `&u32`, we need to derefence it with `*i`
-- Moreover, `count` results a `usize` so we need to cast `i` with `as usize`
+- Moreover, `count` returns a `usize` so we need to cast `i` with `as usize`
 - The final step is to add all the elements in the vector using `sum`
-- `sum` requires to specify the type of the elements been added together using the **turbofish** syntax
+- `sum` requires to specify the type of the elements been added together using the **turbofish** syntax `::<>`
 ```rust
 fn process_part2(input: &str) {
   // ...
