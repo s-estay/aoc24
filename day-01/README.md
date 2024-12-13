@@ -321,7 +321,7 @@ for i in left.iter() {
 - Since `i` is of type `&u32`, we need to derefence it with `*i`
 - Moreover, `count` returns a `usize` so we need to cast `i` with `as usize`
 - The final step is to add all the elements in the vector using `sum`
-- `sum` requires to specify the type of the elements been added together using the **turbofish** syntax `::<>`
+- `sum` requires us to specify the type of the elements been added together using the **turbofish** syntax `::<>`
 ```rust
 fn process_part2(input: &str) {
   // ...
