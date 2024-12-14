@@ -17,7 +17,7 @@ fn main() {
 
 ## Part 1
 - Test input: `xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))`
-- Test input expected result: 2*4 + 5*5 + 11*8 + 8*5 = 161
+- Test input expected result: (2 * 4) + (5 * 5) + (11 * 8) + (8 * 5) = 161
 - We are looking for the pattern `mul(number,number)`
 - So this is a great oportunity to use a regular expression
 - Go to [regex101](https://regex101.com) and find a regex for `mul(number,number)`
