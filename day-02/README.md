@@ -110,7 +110,7 @@ fn main() {
 }
 ```
 
-## Part 2 (not done)
+## Part 2
 
 ## Test input
 - Expected result: 4
@@ -154,4 +154,96 @@ fn main() {
   process_part2(file);
 }
 ```
-- Apparently the technique used by many was brute force, but I wasn't able to figure it out how to do that
+- Apparently the technique used by many was brute force, so lets do that
+- Functions `main` and `is_safe` stays the same
+- Create a vector of vectors containing a copy of a report and all the variations of it when deleting one element
+- We create as many new reports as numbers inside a report are (for the test input this is 5 new reports)
+- We access every new report (sub vector) by mapping within a range
+- We define a range using `(start .. end)`
+- Every new report is a clone of a report where we have removed an item
+- Don't forget to add the original report to `reports_vec` (vector of vectors)
+```rust
+fn is_safe(report: Vec<usize>) -> bool {
+  // ...
+}
+fn process_part2(input: &str) {
+  for line in input.lines() {
+    let report: Vec<usize> = line.split_whitespace().filter_map(|s| s.parse::<usize>().ok()).collect();
+    let mut reports_vec: Vec<Vec<usize>> = (0..report.len()).map(|i| {
+      let mut new_report = report.clone();
+      new_report.remove(i);
+      new_report
+    }).collect();
+    reports_vec.push(report);
+  }
+}
+fn main() {
+  // ...
+}
+```
+- Now we can loop through every new report and call `is_safe`
+- For the first report [7, 6, 4, 2, 1] we will print the following
+```
+Report [6, 4, 2, 1] is safe
+Report [7, 4, 2, 1] is safe
+Report [7, 6, 2, 1] is not safe
+Report [7, 6, 4, 1] is safe
+Report [7, 6, 4, 2] is safe
+Report [7, 6, 4, 2, 1] is safe
+```
+```rust
+fn is_safe(report: Vec<usize>) -> bool {
+  // ...
+}
+fn process_part2(input: &str) {
+  for line in input.lines() {
+    let report: Vec<usize> = line.split_whitespace().filter_map(|s| s.parse::<usize>().ok()).collect();
+    let mut reports_vec: Vec<Vec<usize>> = (0..report.len()).map(|i| {
+      let mut new_report = report.clone();
+      new_report.remove(i);
+      new_report
+    }).collect();
+    reports_vec.push(report);
+    for i in reports_vec {
+      if is_safe(i.clone()) { println!("Report {:?} is safe", i); }
+      else { println!("Report {:?} is not safe", i); }
+    }
+  }
+}
+fn main() {
+  // ...
+}
+```
+- Now lets count the safe reports
+- The following prints 5 0 0 2 2 4 which is correct but we need to add them together
+```rust
+let count = reports_vec.iter().filter(|report| is_safe(*report)).count();
+println!("{}", count);
+```
+- Notice that the argument of `is_safe` is now a reference
+- All the values we got before are now stored in a vector defined outside the main loop
+- `sum` is used to add them together
+- The type that `sum` is returning is defined using the `::<>` notation
+```rust
+fn is_safe(report: &Vec<usize>) -> bool {
+  // ...
+}
+fn process_part2(input: &str) {
+  let mut sp2: Vec<usize> = vec![];
+  for line in input.lines() {
+    let report: Vec<usize> = line.split_whitespace().filter_map(|s| s.parse::<usize>().ok()).collect();
+    let mut reports_vec: Vec<Vec<usize>> = (0..report.len()).map(|i| {
+      let mut new_report = report.clone();
+      new_report.remove(i);
+      new_report
+    }).collect();
+    reports_vec.push(report);
+    sp2.push(reports_vec.iter().filter(|report| is_safe(*report)).count());
+  }
+  println!("{:?}", sp2.iter().sum::<usize>());
+}
+fn main() {
+  // ...
+}
+```
+- Unfortunately I did't get the correct result
