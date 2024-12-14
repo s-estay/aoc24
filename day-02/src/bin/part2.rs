@@ -10,26 +10,23 @@ fn is_safe(report: &Vec<usize>) -> bool {
 }
 
 fn process_part2(input: &str) {
-  let mut sp2: Vec<usize> = vec![];
+  let mut all_reports = Vec::new();
   for line in input.lines() {
     let report: Vec<usize> = line.split_whitespace().filter_map(|s| s.parse::<usize>().ok()).collect();
 
-    let mut reports_vec: Vec<Vec<usize>> = (0..report.len()).map(|i| {
-      let mut new_report = report.clone();
-      new_report.remove(i);
-      new_report
-    }).collect();
-
-    reports_vec.push(report);
-
-    //for i in reports_vec {
-    //  if is_safe(*i) { println!("Report {:?} is safe", i); }
-    //  else { println!("Report {:?} is not safe", i); }
-    //}
-
-    sp2.push(reports_vec.iter().filter(|report| is_safe(*report)).count());
+    if is_safe(&report) { all_reports.push(report.clone()); }
+    else {
+      for bad_level in 0..report.len() {
+        let mut new_report = report.clone();
+        new_report.remove(bad_level);
+        if is_safe(&new_report) {
+          all_reports.push(new_report.clone());
+          break;
+        }
+      }
+    }
   }
-  println!("{:?}", sp2.iter().sum::<usize>());
+  println!("{:?}", all_reports.iter().count());
 }
 
 fn main() {
