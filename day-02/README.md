@@ -110,7 +110,7 @@ fn main() {
 }
 ```
 
-## Part 2
+## Part 2 (not done)
 
 ## Test input
 - Expected result: 4
@@ -247,3 +247,42 @@ fn main() {
 }
 ```
 - Unfortunately I did't get the correct result
+
+## Update
+- I was out on a long walk with the dogs when it hit me
+- If a report is unsafe, remove one element and test it
+- If a report becomes safe after removing one element, don't continue removing elements and testing
+- Additionally, a safe report doesn't need to go through the process of removing and testing
+- Create a vector of vectors `all_reports` outside the loop
+- If the report is safe, push a copy of it to `all_reports`
+- If the report is unsafe, clone the report a to new report
+- Inside a loop in range [0, vector length] remove a number and test `new_report`
+- If `new_report` it's safe, `break` out of the loop and push a copy to `all_reports`
+- After all that is done, count the number of sub vectors stored in `all_reports` using an iterator
+- This is still brute force but whatever
+```rust
+fn is_safe(report: &Vec<usize>) -> bool {
+  // ...
+}
+fn process_part2(input: &str) {
+  let mut all_reports = Vec::new();
+  for line in input.lines() {
+    let report: Vec<usize> = line.split_whitespace().filter_map(|s| s.parse::<usize>().ok()).collect();
+    if is_safe(&report) { all_reports.push(report.clone()); }
+    else {
+      for bad_level in 0..report.len() {
+        let mut new_report = report.clone();
+        new_report.remove(bad_level);
+        if is_safe(&new_report) {
+          all_reports.push(new_report.clone());
+          break;
+        }
+      }
+    }
+  }
+  println!("{:?}", all_reports.iter().count());
+}
+fn main() {
+  // ...
+}
+```
