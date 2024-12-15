@@ -68,3 +68,92 @@ fn main() {
 - The `don't()` instruction disables future mul instructions
 - `do()` regex: `do\(\)`
 - `don't()` regex: `don\'t\(\)`
+- I think I will need the index of every `mul(number,number)` match
+- `get(0)` will return a match like this: `Match { start: 1, end: 9, string: "mul(2,4)" }`
+- `get(0).unwrap().start()` will return the start index of the match: `1`
+- `get(0).unwrap().as_string()` will return the substring we are looking for: `mul(2,4)`
+```rust
+use regex::Regex;
+fn process_input(input: &str) {
+  let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+  for capture in re.captures_iter(&input) { println!("{:?}", capture.get(0).unwrap()); }
+}
+```
+- The idea is to compare the indexes of `do()`, `don´t()` and `mul(number,number)`
+- The following will print: `do(): [59], don't(): [20]`
+```rust
+use regex::Regex;
+fn process_input(input: &str) {
+  let re_do = Regex::new(r"do\(\)").unwrap();
+  let re_dont = Regex::new(r"don\'t\(\)").unwrap();
+  let mut dos: Vec<usize> = Vec::new();
+  let mut donts: Vec<usize> = Vec::new();
+  for capture in re_do.captures_iter(&input) { dos.push(capture.get(0).unwrap().start()); }
+  for capture in re_dont.captures_iter(&input) { donts.push(capture.get(0).unwrap().start()); }
+  println!("do(): {:?}, don't(): {:?}", dos, donts);
+}
+```
+- We will add `filter` after the iterator to filter out the disabled instructions
+- Just like before we save all the valid instructiones indexes with `start`
+- We will use `index` to get the closest `do()` and `don't()`
+- With `filter` we will only keep the `do()` and `don't()` of index smaller than an instruction's index
+- And then we will only keep the biggest value with `max`
+- `max` returns an `Option` which can be `Some(T)` when there is a valid value, otherwise `None`
+- The following will print:
+```
+1
+None
+None
+28
+None
+Some(20)
+48
+None
+Some(20)
+64
+Some(59)
+Some(20)
+```
+- `1 None None` means that we have a `mul(number,number)` at index 1 and there are none `do()` nor `don't()` before it
+- In this case we allow the multiplication
+- `28 None Some(20)` means that we have a `don't()` at index 20, which disables the multiplication
+```rust
+fn process_input(input: &str) {
+  // ...
+  let sum: usize = re
+    .captures_iter(&input)
+    .filter(|capture| {
+      let index = capture.get(0).unwrap().start();
+      println!("{:?}", index);
+      let last_do = dos.iter().filter(|&&i| i < index).max();
+      println!("{:?}", last_do);
+      let last_dont = donts.iter().filter(|&&i| i < index).max();
+      println!("{:?}", last_dont);
+      true
+    })
+    .map(|group| {
+      group[1].parse::<usize>().unwrap() * group[2].parse::<usize>().unwrap()
+    })
+    .sum();
+  println!("{}", sum);
+}
+```
+- Looking at the previous result we notice that we have four posible outcomes
+| do() | don't | return |
+| --- | --- | --- |
+| Some(index 1) | Some(index 2) | true if index 1 > index 2 |
+| Some(index) | None | true |
+| None | Some(index) | false |
+| None | None | true |
+```rust
+.filter(|capture| {
+  let index = capture.get(0).unwrap().start();
+  let last_do = dos.iter().filter(|&&i| i < index).max();
+  let last_dont = donts.iter().filter(|&&i| i < index).max();
+
+  if last_do.is_some() && last_dont.is_some() { last_do > last_dont }
+  else if last_do.is_some() && last_dont.is_none() { return true; }
+  else if last_do.is_none() && last_dont.is_some() { return false; }
+  else { return true; }
+})
+```
