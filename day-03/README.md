@@ -139,12 +139,14 @@ fn process_input(input: &str) {
 }
 ```
 - Looking at the previous result we notice that we have four posible outcomes
-| do() | don't | return |
+
+| do | don't | return |
 | --- | --- | --- |
 | Some(index 1) | Some(index 2) | true if index 1 > index 2 |
 | Some(index) | None | true |
 | None | Some(index) | false |
 | None | None | true |
+
 ```rust
 .filter(|capture| {
   let index = capture.get(0).unwrap().start();
