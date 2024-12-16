@@ -1,6 +1,6 @@
 ## Setup
-- `cargo new day-03 --vcs none`
-- `cd day-03`
+- `cargo new day-04 --vcs none`
+- `cd day-04`
 - `mkdir src/bin`
 - `mv src/main.rs src/bin/part1.rs`
 ```rust
