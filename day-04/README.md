@@ -109,3 +109,28 @@ fn process_input(input: &str) {
   }
 }
 ```
+- Find a character's position, in this case all the Xs
+- Function `find_x` will scan the matrix and compare every value to 'X'
+- One detail to notice is the way Rust does type casting using `as`
+- `find_x` return a vector of tuples
+- The following will print
+```
+[(0, 4), (0, 5), (1, 4), (2, 2), (2, 4), (3, 9), (4, 0), (4, 6), (5, 0), (5, 1), (5, 5), (5, 6), (6, 7), (7, 2), (8, 5), (9, 1), (9, 3), (9, 5), (9, 9)]
+```
+```rust
+fn fin_x(grid: &Vec<String>) -> Vec<(usize, usize)> {
+  let mut position: Vec<(usize, usize)> = Vec::new();
+  for r in 0..grid.len() {
+    for c in 0..grid[0].len() {
+      if grid[r].as_bytes()[c] as char == 'X' { position.push((r, c)); }
+      else { continue; }
+    }
+  }
+  position
+}
+fn process_input(input: &str) {
+  let mut grid: Vec<String> = Vec::new();
+  for line in input.lines() { grid.push(line.to_string()); }
+  println!("{:?}", fin_x(&grid));
+}
+```
