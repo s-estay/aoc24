@@ -55,3 +55,57 @@ fn main() {
 |              |              | M (i+1, j-1) | M (i+1, j) | M (i+1, j+1) |              |              |
 |              | A (i+2, j-2) |              | A (i+2, j) |              | A (i+2, j+2) |              |
 | S (i+3, j-3) |              |              | S (i+3, j) |              |              | S (i+3, j+3) |
+
+## Part 1 (start over)
+- Save test input to vector of strings
+- The followng will print
+```
+["MMMSXXMASM", "MSAMXMSMSA", "AMXSXMAAMM", "MSAMASMSMX", "XMASAMXAMM", "XXAMMXXAMA", "SMSMSASXSS", "SAXAMASAAA", "MAMMMXMMMM", "MXMXAXMASX"]
+10
+10
+```
+```rust
+fn process_input(input: &str) {
+  let mut grid: Vec<String> = Vec::new();
+  for line in input.lines() { grid.push(line.to_string()); }
+  let rows = grid.len();
+  let cols = grid[0].len();
+  println!("{:?}", grid);
+  println!("{:?}", rows);
+  println!("{:?}", cols);
+}
+fn main() {
+  let file = include_str!("test-input.txt");
+  process_input(file);
+}
+```
+- Access every element and get its index
+- The following will print
+```
+0, 0 : 'M'
+0, 1 : 'M'
+0, 2 : 'M'
+0, 3 : 'S'
+0, 4 : 'X'
+0, 5 : 'X'
+0, 6 : 'M'
+0, 7 : 'A'
+0, 8 : 'S'
+0, 9 : 'M'
+1, 0 : 'M'
+1, 1 : 'S'
+...
+```
+```rust
+fn process_input(input: &str) {
+  let mut grid: Vec<String> = Vec::new();
+  for line in input.lines() { grid.push(line.to_string()); }
+  let rows = grid.len();
+  let cols = grid[0].len();
+  for r in 0..rows {
+    for c in 0..cols {
+      println!("{r}, {c} : {:?}", grid[r].as_bytes()[c] as char);
+    }
+  }
+}
+```
