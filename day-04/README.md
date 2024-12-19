@@ -134,3 +134,21 @@ fn process_input(input: &str) {
   println!("{:?}", fin_x(&grid));
 }
 ```
+- Now that I can scan the matrix and identify the character in any given position, I will expland on the idea of traveling
+- We have two loops that go through rows and columns
+- Inside that loop we will have another loop that will allow us to travel in a given direction
+- To indentify all the possible directions I will the use the cardinal points
+
+| NW | N | NE |
+| --- | --- | --- |
+| W | X | E |
+| SW | S | SE |
+
+- To travel N, decrement the x-coordinate by 1: X at (0,0), M at (-1,0), A at (-2,0), S at (-3,0)
+- To travel S, increment the x-coordinate by 1: X at (0,0), M at (+1,0), A at (+2,0), S at (+3,0)
+- To travel E, increment the y-coordinate by 1: X at (0,0), M at (0,+1), A at (0,+2), S at (0,+3)
+- To travel W, decrement the y-coordinate by 1: X at (0,0), M at (0,-1), A at (0,-2), S at (0,-3)
+- To travel NE, decrement the x-coordinate by 1 && increment the y-coordinate by 1: X at (0,0), M at (-1,+1), A at (-2,+2), S at (-3,+3)
+- To travel NW, decrement the x-coordinate by 1 && decrement the y-coordinate by 1: X at (0,0), M at (-1,-1), A at (-2,-2), S at (-3,-3)
+- To travel SE, increment the x-coordinate by 1 && increment the y-coordinate by 1: X at (0,0), M at (+1,+1), A at (+2,+2), S at (+3,+3)
+- To travel SW, increment the x-coordinate by 1 && decrement the y-coordinate by 1: X at (0,0), M at (+1,-1), A at (+2,-2), S at (+3,-3)
