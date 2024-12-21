@@ -223,3 +223,57 @@ fn process_input(input: &str) {
 ```
 
 ## Part 2
+- `cp src/bin/part1.rs src/bin/part2.rs`
+- In this part we are not going to need the directions array
+```rust
+fn process_input(input: &str) {
+  let grid: Vec<Vec<_>> = input.lines().map(|line| line.chars().collect()).collect();
+  let rows = grid.len();
+  let cols = grid[0].len();
+  let mut count = 0;
+  for r in 0..rows {
+    for c in 0..cols {
+    }
+  }
+  println!("{count}");
+}
+fn main() {
+  let file = include_str!("input.txt");
+  process_input(file);
+}
+```
+- The idea is to find all the As and the four letter in each corner
+- Then we will check if the five letters form the pattern we are looking for
+- Unlike part 1, we can't scan the matrix from the "edges"
+- The letter at the center is at least in the second or second to last column of the matrix
+```rust
+for r in 1..rows-1 {
+  for c in 1..cols-1 {
+    let cc = grid[r][c];     // center
+    let tl = grid[r-1][c-1]; // top left
+    let tr = grid[r-1][c+1]; // top right
+    let bl = grid[r+1][c-1]; // bottom left
+    let br = grid[r+1][c+1]; // bottom right
+  }
+}
+```
+- We check if the center letter is A
+- We create two diagonals where the letters M and S can be placed in either direction
+- The diagonals will return true if the conditions are met, otherwise false
+- Finally, if both diagonals exists (return true), increment counter
+```rust
+for r in 1..rows-1 {
+  for c in 1..cols-1 {
+    let cc = grid[r][c];     // center
+    let tl = grid[r-1][c-1]; // top left
+    let tr = grid[r-1][c+1]; // top right
+    let bl = grid[r+1][c-1]; // bottom left
+    let br = grid[r+1][c+1]; // bottom right
+    if cc == 'A' {
+     let d0 = (tl == 'M' && br == 'S') || (tl == 'S' && br == 'M');
+     let d1 = (tr == 'M' && bl == 'S') || (tr == 'S' && bl == 'M');
+     if d0 && d1 { count += 1; }
+    }
+  }
+}
+```
