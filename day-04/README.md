@@ -33,7 +33,7 @@ fn main() {
 ```
 - And then I realized that the vertical and diagonal scanning would requiere indexes
 - So the correct approach is to convert the input to a matrix of letters
-- Find every `X` and look if the `XMAS` forms around it going in all directions
+- And scan it looking if the `XMAS` forms in any direction
 
 |  S  |     |     |  S  |     |     |  S  |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -44,25 +44,14 @@ fn main() {
 |     |  A  |     |  A  |     |  A  |     |
 |  S  |     |     |  S  |     |     |  S  |
 
-- If an `X` has coordinates (i, j), then the table will look like this
-- Welcome back to linear algebra
+- After this point it took me more time to find the solution than I would like to admit
 
-| S (i-3, j-3) |              |              | S (i-3, j) |              |              | S (i-3, j+3) |
-| ------------ | ------------ | ------------ | ---------- | ------------ | ------------ | ------------ |
-|              | A (i-2, j-2) |              | A (i-2, j) |              | A (i-2, j+2) |              |
-|              |              | M (i-1, j-1) | M (i-1, j) | M (i-1, j+1) |              |              |
-| S (i, j-3)   | A (i, j-2)   | M (i, j-1)   | X (i, j)   | M (i, j+1)   | A (i, j+2)   | S (i, j+3)   |
-|              |              | M (i+1, j-1) | M (i+1, j) | M (i+1, j+1) |              |              |
-|              | A (i+2, j-2) |              | A (i+2, j) |              | A (i+2, j+2) |              |
-| S (i+3, j-3) |              |              | S (i+3, j) |              |              | S (i+3, j+3) |
-
-## Part 1 (start over)
+### Create matrix
 - Save test input to vector of strings
 - The followng will print
 ```
+10 x 10
 ["MMMSXXMASM", "MSAMXMSMSA", "AMXSXMAAMM", "MSAMASMSMX", "XMASAMXAMM", "XXAMMXXAMA", "SMSMSASXSS", "SAXAMASAAA", "MAMMMXMMMM", "MXMXAXMASX"]
-10
-10
 ```
 ```rust
 fn process_input(input: &str) {
@@ -70,16 +59,17 @@ fn process_input(input: &str) {
   for line in input.lines() { grid.push(line.to_string()); }
   let rows = grid.len();
   let cols = grid[0].len();
+  println!("{:?} x {:?}", rows, cols);
   println!("{:?}", grid);
-  println!("{:?}", rows);
-  println!("{:?}", cols);
 }
 fn main() {
   let file = include_str!("test-input.txt");
   process_input(file);
 }
 ```
-- Access every element and get its index
+
+### Access every element
+- Get index and the letter in that position
 - The following will print
 ```
 0, 0 : 'M'
@@ -109,46 +99,125 @@ fn process_input(input: &str) {
   }
 }
 ```
-- Find a character's position, in this case all the Xs
-- Function `find_x` will scan the matrix and compare every value to 'X'
-- One detail to notice is the way Rust does type casting using `as`
-- `find_x` return a vector of tuples
-- The following will print
-```
-[(0, 4), (0, 5), (1, 4), (2, 2), (2, 4), (3, 9), (4, 0), (4, 6), (5, 0), (5, 1), (5, 5), (5, 6), (6, 7), (7, 2), (8, 5), (9, 1), (9, 3), (9, 5), (9, 9)]
-```
-```rust
-fn fin_x(grid: &Vec<String>) -> Vec<(usize, usize)> {
-  let mut position: Vec<(usize, usize)> = Vec::new();
-  for r in 0..grid.len() {
-    for c in 0..grid[0].len() {
-      if grid[r].as_bytes()[c] as char == 'X' { position.push((r, c)); }
-      else { continue; }
-    }
-  }
-  position
-}
-fn process_input(input: &str) {
-  let mut grid: Vec<String> = Vec::new();
-  for line in input.lines() { grid.push(line.to_string()); }
-  println!("{:?}", fin_x(&grid));
-}
-```
-- Now that I can scan the matrix and identify the character in any given position, I will expland on the idea of traveling
+
+### Directions
 - We have two loops that go through rows and columns
-- Inside that loop we will have another loop that will allow us to travel in a given direction
-- To indentify all the possible directions I will the use the cardinal points
+- Inside that loop we will have another loop that will allow us to travel in any given direction
+- If an `X` has coordinates (i, j), then all the possible combinations will look like this
+- Welcome back to linear algebra
+
+| S (i-3, j-3) |              |              | S (i-3, j) |              |              | S (i-3, j+3) |
+| ------------ | ------------ | ------------ | ---------- | ------------ | ------------ | ------------ |
+|              | A (i-2, j-2) |              | A (i-2, j) |              | A (i-2, j+2) |              |
+|              |              | M (i-1, j-1) | M (i-1, j) | M (i-1, j+1) |              |              |
+| S (i, j-3)   | A (i, j-2)   | M (i, j-1)   | X (i, j)   | M (i, j+1)   | A (i, j+2)   | S (i, j+3)   |
+|              |              | M (i+1, j-1) | M (i+1, j) | M (i+1, j+1) |              |              |
+|              | A (i+2, j-2) |              | A (i+2, j) |              | A (i+2, j+2) |              |
+| S (i+3, j-3) |              |              | S (i+3, j) |              |              | S (i+3, j+3) |
+
+- We can translate the directions to the cardinal points
 
 | NW | N | NE |
 | --- | --- | --- |
 | W | X | E |
 | SW | S | SE |
 
-- To travel N, decrement the x-coordinate by 1: X at (0,0), M at (-1,0), A at (-2,0), S at (-3,0)
-- To travel S, increment the x-coordinate by 1: X at (0,0), M at (+1,0), A at (+2,0), S at (+3,0)
-- To travel E, increment the y-coordinate by 1: X at (0,0), M at (0,+1), A at (0,+2), S at (0,+3)
-- To travel W, decrement the y-coordinate by 1: X at (0,0), M at (0,-1), A at (0,-2), S at (0,-3)
-- To travel NE, decrement the x-coordinate by 1 && increment the y-coordinate by 1: X at (0,0), M at (-1,+1), A at (-2,+2), S at (-3,+3)
-- To travel NW, decrement the x-coordinate by 1 && decrement the y-coordinate by 1: X at (0,0), M at (-1,-1), A at (-2,-2), S at (-3,-3)
-- To travel SE, increment the x-coordinate by 1 && increment the y-coordinate by 1: X at (0,0), M at (+1,+1), A at (+2,+2), S at (+3,+3)
-- To travel SW, increment the x-coordinate by 1 && decrement the y-coordinate by 1: X at (0,0), M at (+1,-1), A at (+2,-2), S at (+3,-3)
+- Travel N: X at (0,0), M at (-1,0), A at (-2,0), S at (-3,0)
+- Travel S: X at (0,0), M at (+1,0), A at (+2,0), S at (+3,0)
+- Travel E: X at (0,0), M at (0,+1), A at (0,+2), S at (0,+3)
+- Travel W: X at (0,0), M at (0,-1), A at (0,-2), S at (0,-3)
+- Travel NE: X at (0,0), M at (-1,+1), A at (-2,+2), S at (-3,+3)
+- Travel NW: X at (0,0), M at (-1,-1), A at (-2,-2), S at (-3,-3)
+- Travel SE: X at (0,0), M at (+1,+1), A at (+2,+2), S at (+3,+3)
+- Travel SW: X at (0,0), M at (+1,-1), A at (+2,-2), S at (+3,-3)
+
+### Loop XMAS
+- And inside that loop we will have another loop that will give us a tuple with the index and letter of XMAS
+- The following will print
+```
+(0, 'X')
+(1, 'M')
+(2, 'A')
+(3, 'S')
+```
+```rust
+fn main() {
+  let xmas = "XMAS";
+  for i in xmas.chars().enumerate() {
+    println!("{:?}", i);
+  }
+}
+```
+- But I think is more useful to get the index and the letter directly in a variable
+- The following will print
+```
+0 'X'
+1 'M'
+2 'A'
+3 'S'
+```
+```rust
+fn main() {
+  let xmas = "XMAS";
+  for (i, ch) in xmas.chars().enumerate() {
+    println!("{:?} {:?}", i, ch);
+  }
+}
+```
+
+### How to move
+- To move to any given direction, we will use unit vectors
+- An unit vector will give the direction but not how much we need to move
+- For that we will use the index of XMAS that increments for every letter
+- To move one letter to the right (E), multiply the current position with the unit vector (0,1)
+- To move two letters to the right, (0,1) * the index of the letter A in XMAS (2)
+
+### How to know when we get a match
+- We get a match when all letter match
+- A for-loop needs some logic to verify a match, count how many matches we have thus fur, and finally give a result
+- An easier way is to use the iterator transform `all()`, which *tests if every element of the iterator matches a predicate*
+- *all() takes a closure that returns true or false*
+
+### Putting all together
+- Create matrix
+- For the directions, create an array to tuples of type `isize` since some directions are negative numbers
+- Create mutable variable `count`
+- Scan matrix by rows and columns
+- For every direction
+- For every index and letter in XMAS
+- Use `all()` to check if all the conditions match every letter of XMAS
+- Calculate the next position by adding the vector direction * current index of letter XMAS, to the current position (r, c)
+- Use the next position to check if the letter found in that position matches the current letter in XMAS
+- Since the directions are of type `isize`, we need to type cast the index variables
+- When `all()` return true, the conditions in the if statement will be true, which will allow us to increment the counter
+- All this is very different from the C language I'm used to program in
+```rust
+fn process_input(input: &str) {
+  let mut grid: Vec<String> = Vec::new();
+  for line in input.lines() { grid.push(line.to_string()); }
+  let rows = grid.len();
+  let cols = grid[0].len();
+  let xmas = "XMAS";
+  //                                       N       NE      E     SE      S      SW      W        NW
+  let directions: [(isize, isize); 8] = [(-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1)];
+  let mut count = 0;
+  for r in 0..rows {
+    for c in 0..cols {
+      for &(dx, dy) in &directions {
+        if xmas.chars().enumerate().all(|(i, ch)| {
+          let nx = r as isize + i as isize * dx;
+          let ny = c as isize + i as isize * dy;
+          nx >= 0 &&
+          ny >= 0 &&
+          (nx as usize) < cols &&
+          (ny as usize) < rows &&
+          grid[nx as usize].as_bytes()[ny as usize] as char == ch
+        }) {
+          count += 1;
+        }
+      }
+    }
+  }
+  println!("{count}");
+}
+```
