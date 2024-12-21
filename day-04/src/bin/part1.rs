@@ -1,9 +1,5 @@
 fn process_input(input: &str) {
-  let mut grid: Vec<String> = Vec::new();
-
-  for line in input.lines() {
-    grid.push(line.to_string());
-  }
+  let grid: Vec<Vec<_>> = input.lines().map(|line| line.chars().collect()).collect();
 
   let rows = grid.len();
   let cols = grid[0].len();
@@ -12,7 +8,6 @@ fn process_input(input: &str) {
 
   //                                       N       NE      E     SE      S      SW      W        NW
   let directions: [(isize, isize); 8] = [(-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1)];
-  //let right: [(isize, isize); 1] = [(0,1)];
 
   let mut count = 0;
 
@@ -27,7 +22,7 @@ fn process_input(input: &str) {
           ny >= 0 &&
           (nx as usize) < cols &&
           (ny as usize) < rows &&
-          grid[nx as usize].as_bytes()[ny as usize] as char == ch
+          grid[nx as usize][ny as usize] == ch
         }) {
           count += 1;
         }

@@ -173,8 +173,8 @@ fn main() {
 - To move two letters to the right, (0,1) * the index of the letter A in XMAS (2)
 
 ### How to know when we get a match
-- We get a match when all letter match
-- A for-loop needs some logic to verify a match, count how many matches we have thus fur, and finally give a result
+- We get a match when all letters match
+- A for-loop needs some logic to verify a match, count how many matches we have been thus fur, and finally give a result
 - An easier way is to use the iterator transform `all()`, which *tests if every element of the iterator matches a predicate*
 - *all() takes a closure that returns true or false*
 
@@ -221,3 +221,5 @@ fn process_input(input: &str) {
   println!("{count}");
 }
 ```
+
+## Part 2
