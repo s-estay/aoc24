@@ -89,9 +89,82 @@ fn process_input(input: &str) {
   let lines: Vec<_> = input.lines().collect();
   let lines: Vec<_> = lines.split(|line| line.is_empty()).collect();
   (...)
-  let update: Vec<Vec<usize>> = lines[1].iter().map(|line| {
+  let updates: Vec<Vec<usize>> = lines[1].iter().map(|line| {
     line.split(",").map(|s| s.parse::<usize>().unwrap()).collect()
   }).collect();
-  println!("{:?}", update);
+  println!("{:?}", updates);
 }
 ```
+- Now we need to retrieve the middle value of an update
+- To do this, we iterate through the updates with `iter()`
+- And then locate the value with `map()`, where `update.len()/2` is the index of the middle value
+- The following will print
+```
+[61, 53, 29, 47, 13, 75]
+```
+```rust
+fn process_input(input: &str) {
+  (...)
+  let middle_value: Vec<usize> = updates.iter().map(|update| update[update.len()/2]).collect();
+  println!("{:?}", middle_value);
+}
+```
+- Now we add all the middle values like this
+```rust
+fn process_input(input: &str) {
+  (...)
+  let sum: usize = updates.iter().map(|update| update[update.len()/2]).sum();
+  println!("{:?}", sum);
+}
+```
+- But we are been asked to only add the middle value of the updates that follow the rules
+- For this we will use a filter before `map()`
+```rust
+fn process_input(input: &str) {
+  (...)
+  let sum: usize = updates.iter().filter(|_update| true).map(|update| update[update.len()/2]).sum();
+  println!("{:?}", sum);
+}
+```
+- The idea is to compare all the combinationes of pair of two number of the updates against every rule
+- To create all the combinations we will use the crate [itertools](https://crates.io/crates/itertools) and its method `combinations`
+- The following will print
+```
+[[[75, 47], [75, 61], [75, 53], [75, 29], [47, 61], [47, 53], [47, 29], [61, 53], [61, 29], [53, 29]], (...)]
+```
+```rust
+fn process_input(input: &str) {
+  (...)
+  let aa: Vec<Vec<_>> = updates.iter().map(|update| update.iter().combinations(2).collect()).collect();
+  println!("{:?}", aa);
+}
+```
+- Every pair of numbers can be stored as a tuple with `map()`
+```
+[[(75, 47), (75, 61), (75, 53), (...)]
+```
+```rust
+fn process_input(input: &str) {
+  (...)
+  let aa: Vec<Vec<(&usize, &usize)>> = updates.iter().map(|update| update.iter().combinations(2).map(|v| (v[0], v[1])).collect()).collect();
+  println!("{:?}", aa);
+}
+```
+- Update **75,97,47,61,53** fails because it doesn't follow rule **97|75**
+- The first number in update subsequence **75,97** is equal to the second number of rule **97|75**
+- And the second number in update subsequence **75,97** is equal to the first number of rule **97|75**
+- When this happens we can say that the update doesn't follow the rule
+- But we want to keep the updates that do follow the rules, so we invert the condition of the filter with `!`
+```rust
+fn process_input(input: &str) {
+  (...)
+  let sum: usize = updates.iter().filter(|update| {
+    !update.iter().combinations(2).map(|v| (v[0], v[1])).any(|(&x, &y)| rules.iter().any(|r| r.1 == x && r.0 == y))
+    }).map(|update| update[update.len()/2]).sum();
+  println!("{:?}", sum);
+}
+```
+- Notice in the code above how Rust handles embedded interators
+- We first iterate over the updates which are stored in a vector of vectors
+- Inside `filter()` we iterate over every number in an update, creating tuples with `map()`
+- `filter()` get its boolean expression from `any()` that iterates over the rules
