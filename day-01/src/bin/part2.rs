@@ -38,6 +38,6 @@ fn process_part2(input: &str) {
 }
 
 fn main() {
-  let file = include_str!("input2.txt");
+  let file = include_str!("input.txt");
   process_part2(file);
 }

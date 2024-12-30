@@ -41,6 +41,6 @@ fn process_part1(input: &str) {
 }
 
 fn main() {
-  let file = include_str!("input1.txt");
+  let file = include_str!("input.txt");
   process_part1(file);
 }

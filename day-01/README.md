@@ -336,3 +336,76 @@ fn main() {
   process_part2(file);
 }
 ```
+
+## Part 1 new
+- `lines()` will create an iterator over the lines of input
+- Use `map()` to access every line
+- Store values separated with whites spaces in variable `split`
+- Use `map()` to parse the strings to integers of type usize
+```rust
+fn process_input(input: &str) {
+  input.lines().map(|line| {
+    let split = line.split_whitespace().map(|s| s.parse::<usize>().unwrap());
+  })
+}
+fn main() {
+  let file = include_str!("test-input.txt");
+  process_input(file);
+}
+```
+- Create tuple of the first and second number
+- Use `next()` to advance the iterator
+- At this point we have one list with all the numbers stored as tuples
+- To create two lists, one with the tuple's left numbers and one with the right number, we use `unzip()`
+```rust
+let a = [(1, 2), (3, 4), (5, 6)];
+let (left, right): (Vec<_>, Vec<_>) = a.iter().cloned().unzip();
+assert_eq!(left, [1, 3, 5]);
+assert_eq!(right, [2, 4, 6]);
+```
+```rust
+fn process_input(input: &str) {
+  input.lines().map(|line| {
+    let mut split = line.split_whitespace().map(|s| s.parse::<usize>().unwrap());
+    (split.next().unwrap(), split.next().unwrap())
+  }).unzip();
+}
+```
+- We define a new variable to store the tuples
+- The variable is a tuple where every element is a vector of integers of type usize
+- Since `next()` will change the iterator, the left/right tuple needs to be mutable
+```rust
+fn process_input(input: &str) {
+  let (left, right):(Vec<usize>, Vec<usize>) = input.lines().map(|line| {
+    let mut split = line.split_whitespace().map(|s| s.parse::<usize>().unwrap());
+    (split.next().unwrap(), split.next().unwrap())
+  }).unzip();
+}
+```
+- We then sort the numbers in the vector with `sort()`
+- Which make the left/right vectors mutable
+```rust
+fn process_input(input: &str) {
+  let (mut left, mut right):(Vec<usize>, Vec<usize>) = input.lines().map(|line| {
+    let mut split = line.split_whitespace().map(|s| s.parse::<usize>().unwrap());
+    (split.next().unwrap(), split.next().unwrap())
+  }).unzip();
+  left.sort();
+  right.sort();
+}
+```
+- We finally put together the left/right values of same index with `zip()`
+- And calculate the absolute difference (distance) between them with `map()`
+- Add everything together with `add()`
+```rust
+fn process_input(input: &str) {
+  let (mut left, mut right):(Vec<usize>, Vec<usize>) = input.lines().map(|line| {
+    let mut split = line.split_whitespace().map(|s| s.parse::<usize>().unwrap());
+    (split.next().unwrap(), split.next().unwrap())
+  }).unzip();
+  left.sort();
+  right.sort();
+  let sum: usize = left.iter().zip(right.iter()).map(|(l, r)| l.abs_diff(*r)).sum();
+  println!("{:?}", sum);
+}
+```
