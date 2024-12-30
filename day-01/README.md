@@ -337,7 +337,7 @@ fn main() {
 }
 ```
 
-## Part 1 new
+# Part 1 new
 - `lines()` will create an iterator over the lines of input
 - Use `map()` to access every line
 - Store values separated with whites spaces in variable `split`
@@ -373,7 +373,7 @@ fn process_input(input: &str) {
 ```
 - We define a new variable to store the tuples
 - The variable is a tuple where every element is a vector of integers of type usize
-- Since `next()` will change the iterator, the left/right tuple needs to be mutable
+- Since `next()` will change the iterator, the split variable needs to be mutable
 ```rust
 fn process_input(input: &str) {
   let (left, right):(Vec<usize>, Vec<usize>) = input.lines().map(|line| {
@@ -396,7 +396,7 @@ fn process_input(input: &str) {
 ```
 - We finally put together the left/right values of same index with `zip()`
 - And calculate the absolute difference (distance) between them with `map()`
-- Add everything together with `add()`
+- Add everything together with `sum()`
 ```rust
 fn process_input(input: &str) {
   let (mut left, mut right):(Vec<usize>, Vec<usize>) = input.lines().map(|line| {
