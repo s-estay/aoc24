@@ -1,4 +1,4 @@
-use itertools::{assert_equal, Itertools};
+use itertools::Itertools;
 
 fn process_input(input: &str) {
   let lines: Vec<_> = input.lines().collect();
