@@ -168,3 +168,41 @@ fn process_input(input: &str) {
 - We first iterate over the updates which are stored in a vector of vectors
 - Inside `filter()` we iterate over every number in an update, creating tuples with `map()`
 - `filter()` get its boolean expression from `any()` that iterates over the rules
+
+## Part 2
+- In this part we want to keep the updates that don't follow the rules, so we remove the `!` in the filter
+- And we will keep everything as it is from part 1
+- To fix the incorrectly-ordered updates, we will do a swap of values with `map()` after `filter()`
+- Inside `map()` we will clone the updates, do the swap and then return them to the following `map()`
+```rust
+fn process_input(input: &str) {
+  (...)
+  let sum: usize = updates.iter()
+    .filter(|update| {
+      update.iter().combinations(2).map(|v| (v[0], v[1])).any(|(&x, &y)| rules.iter().any(|r| r.1 == x && r.0 == y))
+    })
+    .map(|update| {
+      let mut update = update.clone();
+      // do the swap
+      update
+    })
+    .map(|update| update[update.len()/2])
+    .sum();
+  println!("{:?}", sum);
+}
+```
+### Filter and map
+- `filter_map()` creates an iterator that both filters and maps
+- In vector bb, parse in `map()` return a Result, with `filter()` we keep only the results that are ok, and with the last `map()` we retrieve the value inside Ok
+- In vector cc, we parse and check if the returned value is ok in one go using `filter_map()`
+- In vector dd, we parse in `map()` and then filter out the numbers less than 1 and only keep the results that return Ok
+- `bb: [1, 2, 3] & cc: [1, 2, 3] & dd: [2, 3]`
+```rust
+fn main() {
+  let aa = ["1", "2", "3"];
+  let bb: Vec<usize> = aa.iter().map(|s| s.parse::<usize>()).filter(|s| s.is_ok()).map(|s| s.unwrap()).collect();
+  let cc: Vec<usize> = aa.iter().filter_map(|s| s.parse().ok()).collect();
+  let dd: Vec<usize> = aa.iter().map(|s| s.parse::<usize>()).filter_ok(|&s| s > 1).map(|s| s.unwrap()).collect();
+  println!("bb: {:?} & cc: {:?} & dd: {:?}", bb, cc, dd);
+}
+```
