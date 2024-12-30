@@ -1,5 +1,3 @@
-use std::any;
-
 use itertools::Itertools;
 
 fn process_input(input: &str) {
